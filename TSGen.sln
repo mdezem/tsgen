@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VLab.TSGen", "VLab.TSGen\VLab.TSGen.csproj", "{826B13CF-F682-474A-9475-61E2FD09562D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VLab.TSGen.Tests", "VLab.TSGen.Tests\VLab.TSGen.Tests.csproj", "{40AF82BC-5EA2-4D17-89F0-F06E508E4F0A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TsGenCli", "TsGenCli\TsGenCli.csproj", "{3CA2999D-5C82-4796-B4C8-FCCCCD1E7F19}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{826B13CF-F682-474A-9475-61E2FD09562D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{826B13CF-F682-474A-9475-61E2FD09562D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{826B13CF-F682-474A-9475-61E2FD09562D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{826B13CF-F682-474A-9475-61E2FD09562D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40AF82BC-5EA2-4D17-89F0-F06E508E4F0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40AF82BC-5EA2-4D17-89F0-F06E508E4F0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40AF82BC-5EA2-4D17-89F0-F06E508E4F0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40AF82BC-5EA2-4D17-89F0-F06E508E4F0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3CA2999D-5C82-4796-B4C8-FCCCCD1E7F19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3CA2999D-5C82-4796-B4C8-FCCCCD1E7F19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3CA2999D-5C82-4796-B4C8-FCCCCD1E7F19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3CA2999D-5C82-4796-B4C8-FCCCCD1E7F19}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
