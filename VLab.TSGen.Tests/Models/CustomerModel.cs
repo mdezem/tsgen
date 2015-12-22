@@ -6,18 +6,6 @@ using System.Threading.Tasks;
 
 namespace VLab.TSGen.Tests.Models
 {
-    public enum Gender
-    {
-        Male,
-        Female
-    }
-
-    public class Prop
-    {
-        public string Name { get;set; }
-        public object Value { get; set; }
-    }
-
     public class CustomerModel
     {
         public string CustomerId { get; set; }

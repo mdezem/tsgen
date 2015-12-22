@@ -1,7 +1,7 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VLab.TSGen.Tests.Models;
@@ -58,15 +58,20 @@ namespace VLab.TSGen.Tests
         {
             _tsbatch.ModuleName = "TestModule";
             var str = _tsbatch.GetDeclarations();
+#if DEBUG
             Debug.Write(str);
+#endif
             Assert.IsTrue(str.Contains("module TestModule {"));
         }
-    }
 
-    public class ExtraModel
-    {
-        public string ExtraModelId { get; set; }
-        public string Comments { get; set; }
-        public DateTime? UpdateDate { get; set; }
+        [TestMethod]
+        public void Should_export_external_references()
+        {
+            _tsbatch.IncludeExternalReferences = true;
+            var str = _tsbatch.GetDeclarations();
+
+            Debug.Write(str);
+            Assert.IsTrue(str.Contains("enum ExternalEnum"));
+        }
     }
 }

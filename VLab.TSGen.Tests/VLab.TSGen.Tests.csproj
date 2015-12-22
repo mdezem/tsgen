@@ -50,7 +50,14 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="ExternalEnum.cs" />
+    <Compile Include="ExtraModel.cs" />
+    <Compile Include="Models\AbstractModel.cs" />
     <Compile Include="Models\CustomerModel.cs" />
+    <Compile Include="Models\Gender.cs" />
+    <Compile Include="Models\ModelWithIEnumerable.cs" />
+    <Compile Include="Models\Prop.cs" />
+    <Compile Include="Models\StaticType.cs" />
     <Compile Include="TsGenBatchTests.cs" />
     <Compile Include="TsGenTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

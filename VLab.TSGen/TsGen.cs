@@ -2,16 +2,22 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace VLab.TSGen
 {
     public class TsGen
     {
+        private readonly Dictionary<Type, TypeExportInfo> _typeInfo = new Dictionary<Type, TypeExportInfo>();
+
+        public event ResolveTypeInfoDelegate ResolveTypeInfo;
+
         public string GetTypeDeclaration<T>()
         {
             return GetTypeDeclaration(typeof(T));
@@ -23,10 +29,13 @@ namespace VLab.TSGen
 
             if (type.IsEnum)
                 return GetEnumDeclaration(type);
-            return GetInterfaceDeclaration(type);
+            if (type.IsAbstract) return String.Empty;
+            return (type.IsGenericTypeDefinition 
+                ? String.Empty 
+                : GetInterfaceDeclaration(type));
         }
 
-        private string GetEnumDeclaration(Type type)
+        private static string GetEnumDeclaration(Type type)
         {
             var result = new StringBuilder(128);
             result.AppendFormat("export enum {0} {{\n", type.Name);
@@ -59,7 +68,7 @@ namespace VLab.TSGen
             {
                 result.AppendFormat("    {0}: {1};\n",
                     ResolveMemberDeclarationName(property),
-                    ResolveMemberTypeName(property));
+                    ResolveTypeTsName(property.PropertyType));
             }
             result.AppendLine("} ");
             return result.ToString();
@@ -78,18 +87,16 @@ namespace VLab.TSGen
             return null;
         }
 
-        private string ResolveMemberTypeName(MemberInfo member)
-        {
-            return ResolveTypeName(GetMemberType(member));
-        }
-
-        private string ResolveTypeName(Type type)
+        private string ResolveTypeTsName(Type type)
         {
             if (IsNullable(type))
                 type = Nullable.GetUnderlyingType(type);
 
             if (type.IsEnum)
-                return type.Name;
+            {
+                var typeInfo = ResolveTypeInfoInternal(type);
+                return typeInfo.Name;
+            }
 
             switch (Type.GetTypeCode(type))
             {
@@ -113,37 +120,56 @@ namespace VLab.TSGen
                 case TypeCode.DateTime:
                     return "Date";
                 case TypeCode.Object:
-                    if (type == typeof (Object))
+                    if (type == typeof(Object))
                         return "any";
 
                     if (type.IsArray)
                     {
-                        var elemName = ResolveTypeName(type.GetElementType());
+                        var elemName = ResolveTypeTsName(type.GetElementType());
                         return String.Format("Array<{0}>", elemName);
                     }
 
-                    // enumerable
-                    var enumType = type.GetInterfaces()
-                            .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>));
+                    var enumType = type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>) 
+                        ? type
+                        : type.GetInterfaces().FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>));
 
                     if (enumType != null)
                     {
-                        var elemName = ResolveTypeName(enumType.GetGenericArguments().Single());
+                        var elemName = ResolveTypeTsName(enumType.GetGenericArguments().Single());
                         return String.Format("Array<{0}>", elemName);
                     }
 
-                    // common interface
-                    return String.Format("I{0}", type.Name);
+                    var typeInfo = ResolveTypeInfoInternal(type);
+                    return typeInfo.Name;
+
                 default:
                     return String.Format("ErrorForType{0}", type.Name);
             }
         }
 
-        private string ResolveMemberName(MemberInfo member)
+        private TypeExportInfo ResolveTypeInfoInternal(Type type)
         {
-            var name = member.Name;
-            if (name.Length == 1) return name.ToLowerInvariant();
-            return name.Substring(0, 1).ToLowerInvariant() + name.Substring(1);
+            TypeExportInfo info;
+            if (_typeInfo.TryGetValue(type, out info))
+                return info;
+
+            if (ResolveTypeInfo != null)
+            {
+                var args = new ResolveTypeInfoArgs(type, new TypeExportInfo(type));
+                ResolveTypeInfo(args);
+                info = args.TypeInfo;
+            }
+            else
+            {
+                info = new TypeExportInfo(type);
+            }
+            _typeInfo.Add(type, info);
+            return info;
+        }
+
+        private static string ResolveMemberName(MemberInfo member)
+        {
+            return Regex.Replace(member.Name, @"([A-Z])([A-Z][a-z])|([a-z0-9])([A-Z])", "$1$3_$2$4").ToLower();
         }
 
         private string ResolveMemberDeclarationName(MemberInfo member)
